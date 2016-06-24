@@ -1,3 +1,4 @@
+(def ks-version "1.3.1")
 (def tk-version "1.4.1")
 (def tk-jetty-version "1.5.9")
 
@@ -15,16 +16,25 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
 
                  ;; begin version conflict resolution dependencies
-                 [clj-time "0.9.0"]
+                 [clj-time "0.12.0"]
+                 [ring/ring-codec "1.0.1"]
+                 [commons-codec "1.9"]
+                 [ring/ring-json "0.4.0"]
+                 [cheshire "5.6.1"]
+                 [ring/ring-core "1.5.0"]
+                 [org.clojure/tools.reader "1.0.0-beta2"]
                  ;; end version conflict resolution dependencies
 
-                 [prismatic/schema "1.1.1"]
+                 [prismatic/schema "1.1.2"]
                  [metosin/ring-swagger "0.22.9"]
+                 [metosin/ring-swagger-ui "2.1.4-0"]
 
                  [puppetlabs/trapperkeeper ~tk-version]]
 
-  :profiles {:dev {:dependencies [[puppetlabs/trapperkeeper-webserver-jetty9 ~tk-jetty-version]
-                                  [puppetlabs/trapperkeeper ~tk-version :classifier "test" :scope "test"]]}}
+  :profiles {:dev {:dependencies [[puppetlabs/kitchensink ~ks-version :classifier "test" :scope "test"]
+                                  [puppetlabs/trapperkeeper ~tk-version :classifier "test" :scope "test"]
+                                  [puppetlabs/trapperkeeper-webserver-jetty9 ~tk-jetty-version]
+                                  [puppetlabs/http-client "0.5.0"]]}}
 
   :deploy-repositories [["releases" {:url "https://clojars.org/repo"
                                      :username :env/clojars_jenkins_username
