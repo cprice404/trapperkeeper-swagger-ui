@@ -19,6 +19,7 @@
                  ;; end version conflict resolution dependencies
 
                  [prismatic/schema "1.1.1"]
+                 [metosin/ring-swagger "0.22.9"]
 
                  [puppetlabs/trapperkeeper ~tk-version]]
 
