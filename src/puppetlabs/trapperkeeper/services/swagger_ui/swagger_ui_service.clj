@@ -12,26 +12,26 @@
    [:WebroutingService add-ring-handler get-route]]
   (init [this context]
         (let [config (swagger-ui-core/initialize-config (get-in-config [:swagger-ui]))
-              registered-paths (atom {})
+              registered-schema-paths (atom {})
               registered-tags (atom {})
               swagger-ui-route (get-route this :swagger)]
           (add-ring-handler this (ring-swagger-ui/swagger-ui swagger-ui-route)
                             {:route-id :swagger})
           (add-ring-handler this (ring-json/wrap-json-response
                                   (swagger-ui-core/swagger-json-handler
-                                   {:info (:info config)}
-                                   registered-paths))
+                                   (:info config)
+                                   registered-schema-paths))
                             {:route-id :swagger-json})
           (-> context
-              (assoc :registered-paths registered-paths
+              (assoc :registered-schema-paths registered-schema-paths
                      :registered-tags registered-tags))))
   (register-tags [this tags]
                  (let [context (tks/service-context this)]
                    (swagger-ui-core/register-tags
                     (:registered-tags context)
                     tags)))
-  (register-paths [this paths]
-                  (let [context (tks/service-context this)]
-                    (swagger-ui-core/register-paths
-                     (:registered-paths context)
-                     paths))))
+  (register-schema-paths [this paths]
+                         (let [context (tks/service-context this)]
+                           (swagger-ui-core/register-schema-paths
+                            (:registered-schema-paths context)
+                            paths))))

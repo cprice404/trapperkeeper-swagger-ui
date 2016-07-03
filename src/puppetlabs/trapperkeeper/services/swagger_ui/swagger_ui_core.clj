@@ -19,13 +19,14 @@
    tags :- [swagger2-full-schema/Tag]]
   (swap! existing-tags merge (into {} (map (juxt :name identity) tags))))
 
-(schema/defn ^:always-validate register-paths :- swagger2-full-schema/Paths
+(schema/defn ^:always-validate register-schema-paths :- swagger2-full-schema/Paths
   [existing-paths :- (schema/atom swagger2-full-schema/Paths)
    paths :- swagger2-full-schema/Paths]
   (swap! existing-paths merge paths))
 
 (defn swagger-json-handler
-  [content registered-paths]
+  [info registered-schema-paths]
   (fn [req]
     {:body (swagger-ui-impl/swagger-json
-            (assoc content :paths @registered-paths))}))
+            info
+            (swagger-ui-impl/convert-schema-paths @registered-schema-paths))}))

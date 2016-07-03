@@ -2,4 +2,4 @@
 
 (defprotocol SwaggerUIService
   (register-tags [this tags])
-  (register-paths [this paths]))
+  (register-schema-paths [this paths]))

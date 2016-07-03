@@ -16,21 +16,22 @@
    :bar schema/Str})
 
 (tk/defservice foo-web-service
-  [[:SwaggerUIService register-tags register-paths]]
+  [[:SwaggerUIService register-tags register-schema-paths]]
   (init [this context]
         (register-tags [{:name "foo1"
                          :description "Foo1 Desc"}
                         {:name "foo2"
                          :description "Foo2 Desc"}])
-        (register-paths {"/foo1/ping" {:get {:tags ["foo1"]}}
-                         "/foo2/:id" {:post {:summary "Foo Api"
-                                             :description "Foo Api description"
-                                             :tags ["foo2"]
-                                             :parameters {:path {:id schema/Str}
-                                                          :body Foo}
-                                             :responses {200 {:schema Foo
-                                                              :description "Success!"}
-                                                         404 {:description "Fail!"}}}}})
+        (register-schema-paths
+         {"/foo1/ping" {:get {:tags ["foo1"]}}
+          "/foo2/:id" {:post {:summary "Foo Api"
+                              :description "Foo Api description"
+                              :tags ["foo2"]
+                              :parameters {:path {:id schema/Str}
+                                           :body Foo}
+                              :responses {200 {:schema Foo
+                                               :description "Success!"}
+                                          404 {:description "Fail!"}}}}})
         context))
 
 (deftest swagger-ui-test
@@ -45,6 +46,9 @@
        {:puppetlabs.trapperkeeper.services.swagger-ui.swagger-ui-service/swagger-ui-service
         {:swagger "/docs"
          :swagger-json "/swagger.json"}}
-       :swagger-ui {:info {:title "Test App"}}}
+       :swagger-ui {:info {:title "Test App"
+                           :version "0.1.0"}}}
+      (let [response (http-client/get "http://localhost:8000/swagger.json")]
+        (is (= 200 (:status response))))
       (let [response (http-client/get "http://localhost:8000/docs")]
         (is (= 200 (:status response)))))))
