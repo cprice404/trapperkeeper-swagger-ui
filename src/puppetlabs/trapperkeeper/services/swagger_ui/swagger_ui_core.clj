@@ -2,7 +2,7 @@
   (:require [schema.core :as schema]
             [ring.swagger.swagger2-schema :as swagger2-schema]
             [ring.swagger.swagger2-full-schema :as swagger2-full-schema]
-            [ring.swagger.swagger2 :as swagger2]))
+            [puppetlabs.trapperkeeper.services.swagger-ui.impl.swagger-ui-impl :as swagger-ui-impl]))
 
 (def SwaggerUIConfig
   {:info swagger2-schema/Info})
@@ -27,5 +27,5 @@
 (defn swagger-json-handler
   [content registered-paths]
   (fn [req]
-    {:body (swagger2/swagger-json
+    {:body (swagger-ui-impl/swagger-json
             (assoc content :paths @registered-paths))}))
