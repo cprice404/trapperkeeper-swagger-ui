@@ -7,7 +7,8 @@
             [puppetlabs.http.client.sync :as http-client]
             [puppetlabs.trapperkeeper.core :as tk]
             [schema.core :as schema]
-            [schema.test :as schema-test]))
+            [schema.test :as schema-test]
+            [cheshire.core :as json]))
 
 (use-fixtures :once schema-test/validate-schemas)
 
@@ -48,7 +49,38 @@
          :swagger-json "/swagger.json"}}
        :swagger-ui {:info {:title "Test App"
                            :version "0.1.0"}}}
-      (let [response (http-client/get "http://localhost:8000/swagger.json")]
-        (is (= 200 (:status response))))
+      (let [response (http-client/get "http://localhost:8000/swagger.json"
+                                      {:as :text})]
+        (is (= 200 (:status response)))
+        (is (= {"consumes" ["application/json"]
+                "definitions" {"Foo" {"additionalProperties" false
+                                      "properties" {"bar" {"type" "string"}
+                                                    "foo" {"type" "string"}}
+                                      "required" ["foo"
+                                                  "bar"]
+                                      "type" "object"}}
+                "info" {"title" "Test App"
+                        "version" "0.1.0"}
+                "paths" {"/foo1/ping" {"get" {"responses" {"default" {"description" ""}}
+                                              "tags" ["foo1"]}}
+                         "/foo2/{id}" {"post" {"description" "Foo Api description"
+                                               "parameters" [{"description" ""
+                                                              "in" "path"
+                                                              "name" "id"
+                                                              "required" true
+                                                              "type" "string"}
+                                                             {"description" ""
+                                                              "in" "body"
+                                                              "name" "Foo"
+                                                              "required" true
+                                                              "schema" {"$ref" "#/definitions/Foo"}}]
+                                               "responses" {"200" {"description" "Success!"
+                                                                   "schema" {"$ref" "#/definitions/Foo"}}
+                                                            "404" {"description" "Fail!"}}
+                                               "summary" "Foo Api"
+                                               "tags" ["foo2"]}}}
+                "produces" ["application/json"]
+                "swagger" "2.0"}
+               (json/parse-string (:body response)))))
       (let [response (http-client/get "http://localhost:8000/docs")]
         (is (= 200 (:status response)))))))
